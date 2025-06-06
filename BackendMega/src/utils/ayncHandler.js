@@ -1,10 +1,14 @@
 // Higher order function 
 
-const asyncHandler = (requestHandler) => {
+function asyncHandler(requestHandler) {
     return (req, res, next) => {
         Promise.resolve(requestHandler(req, res, next))
-        .catch((error) => next(error))
+        .catch(function(error){
+            next(error)
+        })
     }
 }
+
+
 
 export {asyncHandler}

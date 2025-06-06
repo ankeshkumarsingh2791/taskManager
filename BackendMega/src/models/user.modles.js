@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose"
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
+import crypto from "crypto"
 const UserSchema = new Schema({
     avatar: {
         type: {
@@ -69,5 +71,42 @@ UserSchema.pre("save", async function(next){
   this.password = await bcrypt.hash(this.password, 10)
   next()
 })
+// compere password
+UserSchema.methods.isPasswordCorrect = async function(password){
+    return  await bcrypt.compare(password, this.password)
+}
+
+// access and refresh token
+
+UserSchema.methods.generateAccessToken() = async function (){
+    jwt.sign({
+        _id: this._id,
+        email: this.email
+    },
+    process.env.ACCESS_TOKE_SECRET,
+    {expiresIn: process.env.ACCESS_TOKEN_EXPIRY}
+)
+}
+
+UserSchema.methods.refreshToken() = async function (){
+    jwt.sign({
+        _id: this._id,
+        email: this.email
+    },
+    process.env.REFRESH_TOKE_SECRET,
+    {expiresIn: process.env.REFRESH_TOKEN_EXPIRY}
+)
+}
+
+// email verification token 
+
+UserSchema.methods.generateEmailToken = function(){
+    const unHashedToken = crypto.randomBytes(20).toString("hex")
+     const hashedToken = crypto.createHash("sha256")
+    .update(unHashedToken)
+    .digest("hex")
+    const tokenExpiry = Date.now() + (20*60*1000)
+    return {unHashedToken, hashedToken, tokenExpiry}
+}
 
 export const User = mongoose.model("User", UserSchema)

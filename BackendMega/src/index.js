@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv"
-import connectDB from "./db/dbConnect"
+import connectDB from "../src/db/dbConnect.js"
+import healthCheckerRouter from "../src/routes/healthcheck.route.js"
 
 dotenv.config({
     path: "./.env"
@@ -28,3 +29,6 @@ app.use(express.json())
 app.get("/", ()=> {
     "I am get"
 })
+
+// router
+app.use("/api/v1/healthCheck", healthCheckerRouter)
