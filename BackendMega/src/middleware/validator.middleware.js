@@ -12,5 +12,5 @@ export const validate = (req, res, next) => {
         [err.path]: err.msg
     }))
 
-    throw new ApiError(422, "Recieved data is nor valid", extractedErrors)
+    throw new ApiError(422, "Recived data is nor valid", extractedErrors)
 }

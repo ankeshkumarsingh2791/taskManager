@@ -32,7 +32,7 @@ const UserSchema = new Schema({
     },
      fullname: {
         type: String,
-        required: true,
+        
        
     },
      password: {
@@ -78,7 +78,7 @@ UserSchema.methods.isPasswordCorrect = async function(password){
 
 // access and refresh token
 
-UserSchema.methods.generateAccessToken() = async function (){
+UserSchema.methods.generateAccessToken = async function (){
     jwt.sign({
         _id: this._id,
         email: this.email
@@ -88,7 +88,7 @@ UserSchema.methods.generateAccessToken() = async function (){
 )
 }
 
-UserSchema.methods.refreshToken() = async function (){
+UserSchema.methods.refreshTokens = async function (){
     jwt.sign({
         _id: this._id,
         email: this.email
