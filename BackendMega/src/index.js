@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import connectDB from "../src/db/dbConnect.js"
 import healthCheckerRouter from "../src/routes/healthcheck.route.js"
 import userRoutes from "../src/routes/auth.route.js"
+import cookieParser from "cookie-parser";
 
 dotenv.config({
     path: "./.env"
@@ -26,6 +27,7 @@ connectDB()
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 
 app.get("/", ()=> {
     "I am get"
