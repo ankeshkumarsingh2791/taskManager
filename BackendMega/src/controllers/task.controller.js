@@ -1,6 +1,6 @@
 // get all tasks
 import { Task } from "../models/task.model.js";
-import { User } from "../models/user.model.js";
+import { subTask } from "../models/subTask.modle.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 const getTasks = async (req, res) => {
@@ -146,17 +146,84 @@ const deleteTask = async (req, res) => {
 
 const createSubTask = async (req, res) => {
   // create subtask
+ try {
+   const {title, description} = req.body;
+   if(!title || !description){
+     throw new ApiError(401, "Title and description are required")
+   }
+   const subtask = await subTask.create({
+     title,
+     description,
+     task: req.params.Task._id,
+     createBy: req.User._id,
+     isCompleted:false
+   })
+   if(!subtask){
+     throw new ApiError(401, "problem in creating sub task")
+   }
+ 
+   throw new ApiResponse(200, "task created ", {
+     subTask:{
+       id: subtask._id,
+       title: subtask.title,
+       createBy: subtask.createBy,
+       status: subtask.isCompleted,
+       description: subtask.description
+     }
+ 
+   })
+ } catch (error) {
+  throw new ApiError(401, "Error in creating sub task", {error})
+ }
 
 };
 
 
 const updateSubTask = async (req, res) => {
   // update subtask
+  try {
+    const {description, isCompleted, title} = req.body;
+    if(!description || !isCompleted || !title){
+      throw new ApiError(401, "please provide information")
+    }
+    const subtask = await subTask.findById(req.params.subTask._id);
+    if(!subTask){
+      throw new ApiError(404, "SubTask not found");
+    }
+    subtask.description = description;
+    subtask.isCompleted = isCompleted;
+    subtask.title = title;
+    await subtask.save();
+    throw new ApiResponse(200, "subTask created successfully", {
+      subTask:{
+        id: subtask._id,
+        title: subtask.title,
+        description: subtask.description,
+        isCompleted: subtask.isCompleted,
+        createBy: subtask.createBy,
+        task: subtask.task
+      }
+    })
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(401, "Error in updating sub task", {error});
+  }
 };
 
 
 const deleteSubTask = async (req, res) => {
   // delete subtask
+  try{
+    const subtask = await subTask.findByIdAndDelete(req.params.subTask._id);
+    if(!subtask){
+      throw new ApiError(404, "SubTask not found");
+
+    }
+    throw new ApiResponse(200, "SubTask deleted successfully")
+  } catch (error){
+    console.log(error);
+    throw new ApiError(401, "Error in deleting sub task", {error})
+  }
 };
 
 export {
@@ -164,7 +231,7 @@ export {
   createTask,
   deleteSubTask,
   deleteTask,
-  getTaskById,
+  getTaskByProject,
   getTasks,
   updateSubTask,
   updateTask,
