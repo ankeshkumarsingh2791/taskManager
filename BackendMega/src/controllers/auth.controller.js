@@ -2,8 +2,9 @@ import { asyncHandler } from "../utils/ayncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { User } from "../models/user.modles.js"; // fixed typo
-import { emailVerificationMailGenContent } from "../utils/mail.js";
+import { emailVerificationMailGenContent, forgetPasswordMailGenContent } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto"
 
 // Register User
 const registerUser = asyncHandler(async (req, res) => {
@@ -28,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
   newUser.emailVerificationToken = verificationUrl.hashedToken;
   await newUser.save();
 
-  await emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
+  emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
 
   res.status(201).json(
     new ApiResponse(201, "User registered successfully", {
@@ -130,4 +131,104 @@ const logOutUser = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "User logged out successfully"));
 });
 
-export { registerUser, loginUser, verifyingUser, getProfile, logOutUser };
+// const forgotPassword = async(req, res) => {
+//    const { email } =  req.body;
+//   try {
+    
+//      if (!email){
+//         throw new ApiError(401, "all fields are required")
+//      }
+  
+//      const user = await User.findOne({email});
+//      if(!user){
+//         throw new ApiError(401, "Invalid credentials")
+//      }
+//      const resetToken = crypto.randomBytes(32).toString("hex");
+//      user.forgotPasswordToken = resetToken;
+//      user.forgotPasswordExpiry = Date.now()+10*60*1000;
+//      await user.save();
+  
+//      forgetPasswordMailGenContent(user.username, user.forgotPasswordToken)
+//      throw new ApiResponse(201, "Email send Successfully")
+//   } catch (error) {
+//     console.log(error)
+//     res.status(401).json({
+//       success: false,
+//       message:"Something is wrong in forgotPassword",
+//       error: error
+//     })
+//   }
+// }
+
+const forgotPassword = async (req, res) => {
+  try {
+    const  { email }  = req.body
+
+    if (!email) {
+      throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new ApiError(401, "Invalid credentials");
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.forgotPasswordToken = resetToken;
+    user.forgotPasswordExpiry = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    forgetPasswordMailGenContent(user.username, resetToken);
+
+    return res.status(201).json({
+      success: true,
+      message: "Password reset email sent",
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in forgotPassword",
+      error: error.message,
+    });
+  }
+};
+
+const resetPassword = async(req, res) => {
+  try {
+    const {token} = req.params;
+    const {password, confirmPassword} = req.body;
+    if(!password || !confirmPassword || !token){
+      throw new ApiError(401, "All fields are required")
+    }
+
+    if(password !== confirmPassword){
+      throw new ApiError(401, "Password does not same")
+    }
+
+    const user = await User.findOne({
+      forgotPasswordToken: token,
+      forgotPasswordExpiry:{$gt: Date.now()}
+    })
+    if(!user){
+      throw new ApiError(401, "Invalid token or token expiry")
+    }
+
+    user.password = password
+    user.forgotPasswordExpiry = undefined;
+    user.forgotPasswordToken = undefined;
+
+    await user.save()
+    throw new ApiResponse(200, "Password reset successfully")
+  } catch (error) {
+     throw new ApiError(401, "Something wrong in forgot password")
+  }
+}
+
+const updateProfileImage = async (req, res) => {
+  const { fullname }  = req.body;
+
+}
+export { registerUser, loginUser, verifyingUser, getProfile, logOutUser, forgotPassword, resetPassword };
