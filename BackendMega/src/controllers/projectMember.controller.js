@@ -2,6 +2,7 @@ import { Project } from '../models/project.model.js';
 import { ProjectMember } from '../models/projectMember.model.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/apiError.js';
+import {User} from '../models/user.modles.js'
 import { UserRolesEnum, AvailableUserRoles } from '../utils/constants.js';
 import asyncHandler from 'express-async-handler';
 
@@ -150,19 +151,104 @@ const deleteProject = async (req, res) => {
 
 const getProjectMembers = async (req, res) => {
   // get project members
+  try {
+    
+    const project = await Project.findById(req.params.projectId);
+    if(!project){
+      throw new ApiError(401, "Project not found")
+    }
+
+    const members = await ProjectMember.find({project: project._id}).populate('user', 'name email');
+    if(!members || members.length === 0){
+      throw new ApiError(404, "No members found for this project");
+    }
+    throw new ApiResponse(200, "Project members fetched successfully", {
+      members: members.map(member => ({
+        id: member._id,
+        user: {
+          id: member.user._id,
+          name: member.user.name,
+          email: member.user.email
+        },
+        project: member.project,
+        role: member.role,
+
+
+      }))
+
+    })
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, "Something went wrong while fetching project members");
+    
+  }
 };
 
 const addMemberToProject = async (req, res) => {
   // add member to project
+try {
+    const {email, name} = req.body;
+    if(!email || !name){
+      throw new ApiError(400, "Email and name is required");
+    }
+    const user = await User.findOne({email});
+    if(!user){
+      throw new ApiError(404, "User not found with this email");
   
-};
+    }
+    const project = await Project.findById(req.params.projectId);
+    if(!project){
+      throw new ApiError(401, "Project not found");
+    }
+    if(project.createdBy.toString() !== req.params.User._id.toString()){
+      throw new ApiError(401, "You are not allowed")
+    }
+    const existingMember = await ProjectMember.findOne({
+      user: user._id,
+      project: project._id
+    })
+    if(existingMember){
+      throw new ApiError(400, "User is already a member of this project");
+    }
+    const newMember = await ProjectMember.create({
+      user: user._id,
+      project: project._id,
+      role: AvailableUserRoles.MEMBER // default role
+    });
+    if(!newMember){
+      throw new ApiError(500, "Something went wrong while adding member to project");
+    }
+    throw new ApiResponse(201, "Member added to project successfully", {
+      member: {
+        id: newMember._id,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email
+        },
+        project: project._id,
+        role: newMember.role
+      }
+    });
+} catch (error) {
+    console.log(error);
+    throw new ApiError(500, "Something went wrong while adding member to project");
+  }
+  
+}
+
+
+
 
 const deleteMember = async (req, res) => {
   // delete member from project
+
 };
 
 const updateMemberRole = async (req, res) => {
   // update member role
+  
+  
 };
 
 export {
