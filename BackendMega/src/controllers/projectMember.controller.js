@@ -242,13 +242,57 @@ try {
 
 const deleteMember = async (req, res) => {
   // delete member from project
+  const {projectId} =req.params;
+  const {memberId} = req.params;
+  try {
+    const project = await Project.findById(projectId);
+    if(!project){
+      throw new ApiError(404, "Project not found");
+    }
+    const member  = await ProjectMember.findByIdAndDelete(memberId);
+    if(!member){
+      throw new ApiError(404, "Member not found in this project");
+    }
+    if(!member){
+      throw new ApiError(404, "Member not found in this project");
+    }
+    res.status(200).json(new ApiResponse( 200, "member deleted successfully"))
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, "Something went wrong while deleting member from project");
+    
+  }
+
 
 };
 
 const updateMemberRole = async (req, res) => {
   // update member role
-  
-  
+  const {projectId} = req.params;
+  const {memberId} = req.params;
+  const project =  await Project.findById(projectId);
+  if(!project){
+    throw new ApiError(404, "Project not found");
+  }
+  const member = await ProjectMember.findById(memberId);
+  if(!member){
+    throw new ApiError(404, "Member not found in this project");
+  }
+  const { role } = req.body;
+  if (!role || !Object.values(AvailableUserRoles).includes(role)) {
+    throw new ApiError(400, "Invalid or missing role");
+  }
+  member.role = role;
+  await member.save();
+  res.status(200).json(new ApiResponse(200, "Member role updated successfully", {
+    member: {
+      id: member._id,
+      user: member.user,
+      project: member.project,
+      role: member.role
+    }
+  }));
+
 };
 
 export {
