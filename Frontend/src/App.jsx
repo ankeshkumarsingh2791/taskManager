@@ -3,6 +3,8 @@ import Layout from './Layouts/Layout'
 import Sigin from './Components/Sigin'
 import SignUp from './Components/SignUp'
 import SideNavOptions from './Components/SideNavOptions';
+import ChangePassword from './Components/ChangePassword';
+import ForgotPassword from './Components/ForgotPassword';
 
 function App() {
  
@@ -22,8 +24,6 @@ function App() {
 
       </Routes>
      
-    
-
     </>
   )
 }
