@@ -1,18 +1,30 @@
-
-
+import { Routes, Route } from 'react-router-dom';
+import Layout from './Layouts/Layout'
 import Sigin from './Components/Sigin'
 import SignUp from './Components/SignUp'
+import SideNavOptions from './Components/SideNavOptions';
 
 function App() {
  
 
   return (
-    <div className='w-full flex flex-col px-12 py-20 justify-center items-center '>
-     <h1>Hello Ankesh</h1>
-    <SignUp />
-    <Sigin />
+    <>
+    
+      <Routes>
+        <Route path='/' element={<Layout />}>
 
-    </div>
+        <Route path='/dashboard' element={<Sigin />} />
+        
+        <Route path='/dashboard-1' element={<SignUp />} />
+        <Route path='/dashboard-2' element={<SideNavOptions />} />
+        </Route>
+
+
+      </Routes>
+     
+    
+
+    </>
   )
 }
 
