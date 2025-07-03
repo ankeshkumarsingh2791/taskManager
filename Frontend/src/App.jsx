@@ -3,8 +3,8 @@ import Layout from './Layouts/Layout'
 import Sigin from './Components/Sigin'
 import SignUp from './Components/SignUp'
 import SideNavOptions from './Components/SideNavOptions';
-import ChangePassword from './Components/ChangePassword';
-import ForgotPassword from './Components/ForgotPassword';
+import CreateTaskForm from './Components/CreateTaskForm';
+import KanBanBoard from './Components/KanBanBoard';
 
 function App() {
  
@@ -15,9 +15,9 @@ function App() {
       <Routes>
         <Route path='/' element={<Layout />}>
 
-        <Route path='/dashboard' element={<Sigin />} />
+        <Route path='/dashboard' element={<KanBanBoard />} />
         
-        <Route path='/dashboard-1' element={<SignUp />} />
+        <Route path='/dashboard-1' element={<CreateTaskForm />} />
         <Route path='/dashboard-2' element={<SideNavOptions />} />
         </Route>
 
