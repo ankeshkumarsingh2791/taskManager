@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import ProjectForm from '../Components/ProjectForm';
+import apiClient from '../../Service/apiClient';
 
 const Layout = () => {
   const [showProjects, setShowProjects] = useState(false);
   const [addProject, setAddProject] = useState(false)
+  const navigate = useNavigate()
+  const handleLogOut = async (e) => {
+    try {
+      await apiClient.logOut();
+      navigate('/login')
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className="w-full h-screen flex flex-col bg-gray-100 font-sans">
@@ -69,6 +80,11 @@ const Layout = () => {
               <ProjectForm />
             </div>
           )}
+        </div>
+        <div>
+          <button onClick={handleLogOut} type='submit' className='bg-blue-400 text-white rounded-lg  font-medium p-2'>
+            LogOut
+          </button>
         </div>
       </header>
 

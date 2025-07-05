@@ -1,21 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import apiClient from '../../Service/apiClient';
 
 
 const SignUp = () => {
   const [form, setForm] = useState({
-    fullName: '',
+    name: '',
     email: '',
     username: '',
+    password:''
   });
+  const [load, setLoad] = useState(false)
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
+    // setLoad(true)
     console.log('Form submitted:', form);
+
+    try {
+      console.log("try to fet response")
+      const {name,email,username,password} = form
+     
+      apiClient.signup(name,email,username,password)
+    } catch (error) {
+      console.log(error, "error in sing up")
+    }
   };
+
 
   return (
     <div
@@ -30,9 +45,9 @@ const SignUp = () => {
           </label>
           <input
             type="text"
-            name="fullName"
-            id="fullName"
-            value={form.fullName}
+            name="name"
+            id="name"
+            value={form.name}
             onChange={handleChange}
             placeholder="John Doe"
             required
@@ -90,6 +105,7 @@ const SignUp = () => {
 
         <button
           type="submit"
+          
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-200"
         >
           Create Account

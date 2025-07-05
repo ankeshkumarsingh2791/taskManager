@@ -1,19 +1,29 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import apiClient from '../../Service/apiClient';
+import { Link, useNavigate } from 'react-router';
 
 const Sigin = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
-
+  const navigate = useNavigate()
+  
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Signing in with:', form);
+    try {
+      e.preventDefault();
+      console.log('Signing in with:', form);
+      const {email, password} = form
+      apiClient.signin(email,password)
+      navigate('/dashboard')
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -66,9 +76,9 @@ const Sigin = () => {
 
         <p className="text-sm text-center text-gray-600 mt-4">
           Don't have an account?{' '}
-          <a href="#" className="text-blue-600 hover:underline">
+          <Link  to={'/register'}  className="text-blue-600 hover:underline">
             Register
-          </a>
+          </Link>
         </p>
       </form>
     </motion.div>
