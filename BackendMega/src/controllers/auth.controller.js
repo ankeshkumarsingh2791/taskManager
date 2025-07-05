@@ -2,15 +2,16 @@ import { asyncHandler } from "../utils/ayncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { User } from "../models/user.modles.js"; // fixed typo
-import { emailVerificationMailGenContent, forgetPasswordMailGenContent } from "../utils/mail.js";
+import { emailVerificationMailGenContent, forgetPasswordMailGenContent, sendMail } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto"
 
 // Register User
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
-
+  const { email, username, password, role} = req.body;
+  console.log(email, username, password)
   if (!email || !username || !password) {
+    
     throw new ApiError(400, "All fields are required");
   }
 
@@ -25,11 +26,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while saving user");
   }
 
-  const verificationUrl = newUser.generateEmailToken();
+  const verificationUrl = await newUser.generateEmailToken();
   newUser.emailVerificationToken = verificationUrl.hashedToken;
   await newUser.save();
+console.log(verificationUrl);
 
-  emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
+  // emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
+  await sendMail({body:verificationUrl.hashedToken,subject:"Registration",email,})
 
   res.status(201).json(
     new ApiResponse(201, "User registered successfully", {

@@ -30,7 +30,7 @@ const UserSchema = new Schema({
         trim: true,
         
     },
-     fullname: {
+        name: {
         type: String,
         
        
