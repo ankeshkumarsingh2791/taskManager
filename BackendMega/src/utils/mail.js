@@ -2,18 +2,10 @@ import Mailgen from "mailgen";
 import nodemailer from "nodemailer";
 
  export const sendMail = async (options) => {
-  const mailGenerator = new Mailgen({
-    theme: "default",
-    product: {
-      name: "Task Manager",
-      link: "https://mailgen.js/",
-    },
-  });
 
-  var emailText = mailGenerator.generatePlaintext(options.mailGenContent)
-  var emailHTML = mailGenerator.generate(options.mailGenContent)
 
   const transporter = nodemailer.createTransport({
+    service: "Gmail",
     host: process.env.MAILTRAP_SMTP_HOST,
     port: process.env.MAILTRAP_SMTP_PORT,
     secure: false,
@@ -23,12 +15,13 @@ import nodemailer from "nodemailer";
 
     }
   })
+
    const mail = {
     from: 'ankeshkumarsingh2791@gmail.com',
     to: options.email,
     subject: options.subject,
-    text: emailText,
-    html: emailHTML
+    text: options.body,
+    // html: emailHTML
    };
 
    try {
