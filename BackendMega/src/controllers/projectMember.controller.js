@@ -1,17 +1,19 @@
-import { Project } from '../models/project.model.js';
-import { ProjectMember } from '../models/projectMember.model.js';
+import { Project } from '../models/project.modle.js';
+import { ProjectMember } from '../models/projectMember.modle.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/apiError.js';
 import {User} from '../models/user.modles.js'
 import { UserRolesEnum, AvailableUserRoles } from '../utils/constants.js';
-import asyncHandler from 'express-async-handler';
+
 
 
 const createProject = async (req, res) => {
   // create project
  try {
    const {name, description} = req.body;
-   if(!name || !description){
+   const userId = req.query.userId || req.params.userId // get userId from query or params
+   console.log("userId ....", userId);
+   if(!name || !description ||!userId ){
      throw new ApiError(400, "Name and description  are required");
    }
    const existingProject = await Project.findOne({name});
@@ -21,20 +23,21 @@ const createProject = async (req, res) => {
    const newProject = await Project.create({
      name,
      description,
-     createdBy: req.params.User._id
+     createdBy: userId
    });
+   await newProject.save()
    if(!newProject){
      throw new ApiError(500, "Something went wrong while creating new project")
    }
    const newProjectMember = await ProjectMember.create({
-     user: req.params.User._id,
+     user: userId,
      project: newProject._id,
      role: UserRolesEnum.ADMIN
    });
    if(!newProjectMember){
      throw new ApiError(500, "Something went wrong while adding project member")
    }
-   throw new ApiResponse(201, "Project created successfully", {
+    new ApiResponse(201, "Project created successfully", {
      project: {
        id: newProject._id,
        name: newProject.name,
@@ -55,18 +58,18 @@ const createProject = async (req, res) => {
 const getProjects = async (req, res) => {
   // get all projects
   try {
-    const projects = await Project.find({createdBy: req.params.User._id})
+    // user id;
+    const userId = req.user._id;
+
+    // fetch all project from DB;
+    const projects = await Project.find({createdBy: userId})
+
+    // send it to frontend
     if(!projects || projects.length === 0){
       throw new ApiError(404, "No projects found for this user");
     }
-    throw new ApiResponse(200, "Project fetched successfully",{
-      projects: projects.map(project => ({
-        id: project._id,
-        name: project.name,
-        description: project.description,
-        createdBy: project.createdBy
-      }))
-    })
+     
+    res.status(200).json(new ApiResponse(200, projects,"Project fetched successfully"))
   
   } catch (error) {
     console.log(error);
@@ -77,18 +80,20 @@ const getProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   // get project by id
   try {
-    const project = await Project.findById({_id: req.params.ProjectId, createdBy: req.params.User._id});
+    const userId = req.user._id
+    const projectId = req.query.projectId || req.params.projectId
+    const project = await Project.findById({_id: projectId, createdBy: userId});
     if(!project){
       throw new ApiError(404, "Project not found")
     }
-    throw new ApiResponse(200, "Project fetched successfully", {
+     new ApiResponse(200,  {
       project: {
         id: project._id,
         name: project.name,
         description: project.description,
         createdBy: project.createdBy
       }
-    });
+    },"Project fetched successfully",);
 
   } catch (error) {
     console.log(error);

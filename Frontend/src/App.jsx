@@ -3,32 +3,18 @@ import Layout from './Layouts/Layout'
 import Sigin from './Components/Sigin'
 import SignUp from './Components/SignUp'
 import KanBanBoard from './Components/KanBanBoard';
-import { useEffect, useState } from 'react';
-import apiClient from '../Service/apiClient';
+
+import { useUserContext } from '../context/UserContext';
+import { useEffect } from 'react';
 
 function App() {
-  const [fetchedData, setFetchedData] = useState({})
-  const navigate  = useNavigate()
-   useEffect(() => {
-    const data = async () => {
-    try{
-      const response = await apiClient.whoAm()
-     setFetchedData(response)
-     console.log(response)
-    } catch(error){
-      console.log(error)
-      navigate('/login')
-    }
-  }
-  data()
-    
- }, [])
- const {statusCode} = fetchedData
- console.log(statusCode)
- 
- 
+  const {fetchedData} =  useUserContext()
+ const statusCode = fetchedData?.statusCode || 401
   
- 
+//  useEffect(()=>{
+//   console.log(fetchedData,"?????????????????");
+  
+//  },[fetchedData])
   return (
     <>  
     

@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.get("/who-am-i",whoAmI);
 router.post("/register", registerUser)
-router.post("/login", userLoginValidator(), validate, loginUser)
+router.post("/login",  loginUser)
 router.get("/verify/:token", verifyingUser)
 router.get("/profile",isLoggedIn, getProfile)
 router.post("/logout", isLoggedIn, logOutUser)

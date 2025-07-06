@@ -1,5 +1,5 @@
 import { Project } from "../models/project.modle.js";
-import { User } from "../models/user.model.js";
+import { User } from "../models/user.modles.js";
 import {ApiError} from "../utils/apiError.js"
 import {ApiResponse} from "../utils/apiResponse.js"
 
@@ -8,6 +8,7 @@ const createProject = async (req, res) => {
     try {
         const {name, description} = req.body;
         const user = await User.findById(req.user._id);
+        console.log(user)
         if(!user){
             throw new ApiError(404, "Invalid user")
         }
@@ -17,7 +18,7 @@ const createProject = async (req, res) => {
             createdBy: user._id
         })
         await project.save();
-        throw new ApiResponse(201, project, "project created successfully")
+         new ApiResponse(201, project, "project created successfully")
 
     } catch (error) {
         throw new ApiError(404, "Error while creating Project", Error)
@@ -32,7 +33,7 @@ const getAllProject = async (req, res) => {
         if(!projects){
             throw new ApiError(404, "Project not found")
         }
-        throw new ApiResponse(200, projects, "Projects fetched successfully")
+         new ApiResponse(200, projects, "Projects fetched successfully")
 
     } catch (error) {
       throw new ApiError(404, "Error while fetching All projects", error)  
@@ -45,7 +46,7 @@ const getProjectById = async (req, res) => {
         if(!project){
             throw new ApiError(404, "Project not found")
         }
-        throw new ApiResponse(200, project, "Project fetched successfully")
+         new ApiResponse(200, project, "Project fetched successfully")
 
     } catch (error) {
       throw new ApiError(404, "Error while fetching Project by ID", error)  
@@ -62,7 +63,7 @@ const updateProject = async (req, res) => {
         if(!project){
             throw new ApiError(404, "Project not found")
         }
-        throw new ApiResponse(200, project, "Project updated successfully")
+         new ApiResponse(200, project, "Project updated successfully")
 
 
     } catch (error) {
@@ -76,7 +77,7 @@ const deleteProject = async(req, res) => {
         if(!project){
             throw new ApiError(404, "Project not found")
         }
-        throw new ApiResponse(200, project, "Project deleted successfully")
+         new ApiResponse(200, project, "Project deleted successfully")
 
     } catch (error) {
         throw new ApiError(404, "Error while deleting Project", error)

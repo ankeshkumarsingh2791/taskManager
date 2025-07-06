@@ -1,22 +1,50 @@
-import React, { useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import ProjectForm from '../Components/ProjectForm';
-import apiClient from '../../Service/apiClient';
+import React, { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import ProjectForm from "../Components/ProjectForm";
+import apiClient from "../../Service/apiClient";
+import { useUserContext } from "../../context/UserContext";
+import apiProject from "../../Service/apiProject";
 
 const Layout = () => {
   const [showProjects, setShowProjects] = useState(false);
-  const [addProject, setAddProject] = useState(false)
-  const navigate = useNavigate()
+  const [addProject, setAddProject] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectId, setProjectId] = useState('')
+  const { fetchedData } = useUserContext();
+  const navigate = useNavigate();
+  const userId = fetchedData?.data?._id || null;
   const handleLogOut = async (e) => {
     try {
       await apiClient.logOut();
-      navigate('/login')
-
+      navigate("/login");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        if (userId) {
+          const response = await apiProject.getAllProject(userId);
+          console.log(response, "Fetched Projects");
+          setProjects(response?.data);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, [userId]);
 
+  useEffect(() =>{
+    const fetchProjectById =  async () => {
+
+      const response = await apiProject.getProjectById(projectId)
+      console.log(response, ">>>>>>>>>>>>>>")
+    }
+    fetchProjectById()
+  },[projectId])
+  console.log(JSON.stringify(projects), "Projects in Layout");
   return (
     <div className="w-full h-screen flex flex-col bg-gray-100 font-sans">
       {/* Header/Nav */}
@@ -31,11 +59,25 @@ const Layout = () => {
           </button>
           {showProjects && (
             <div className="absolute mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
-              <ul className="text-sm text-gray-700 divide-y divide-gray-200">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Project Alpha</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Project Beta</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">New Project</li>
-              </ul>
+              {projects.length === 0 ? (
+                <p className="text-gray-600">No projects found.</p>
+              ) : (
+                <div className="grid grid-cols-1  gap-2 p-2 ">
+                  {projects.map((project) => (
+                    <button
+                      key={project._id}
+                       onClick={() => setProjectId(project._id)}
+                        
+                      className="bg-white rounded-lg shadow p-2  transition duration-200"
+                    >
+                      <h2  onClick={() => setShowProjects(!showProjects)} className="text-xl font-semibold text-blue-500">
+                        {project.name}
+                      </h2>
+                      
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -68,21 +110,25 @@ const Layout = () => {
             </li>
           </ul>
         </nav>
-        <div className='relative'>
-           <button
+        <div className="relative">
+          <button
             onClick={() => setAddProject(!addProject)}
             className="text-lg font-semibold text-white bg-blue-400 p-2 rounded-xl hover:bg-blue-600 transition duration-300"
           >
             Create Projects ▾
           </button>
-             {addProject && (
+          {addProject && (
             <div className="absolute mt-2  bg-white rounded-lg shadow-lg border z-50">
               <ProjectForm />
             </div>
           )}
         </div>
         <div>
-          <button onClick={handleLogOut} type='submit' className='bg-blue-400 text-white rounded-lg  font-medium p-2'>
+          <button
+            onClick={handleLogOut}
+            type="submit"
+            className="bg-blue-400 text-white rounded-lg  font-medium p-2"
+          >
             LogOut
           </button>
         </div>

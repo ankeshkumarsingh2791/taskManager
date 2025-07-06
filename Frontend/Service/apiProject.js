@@ -1,6 +1,6 @@
-class ApiClient{
+class ApiProject{
     constructor(){
-        this.baseURL = "http://localhost:8080/api/v1/user";
+        this.baseURL = "http://localhost:8080/api/v1/project";
         this.defaultHeaders = {
             'Content-Type': "application/json",
             "Accept": "application/json"
@@ -27,23 +27,32 @@ class ApiClient{
         }
     }
 
-    async signup(name, email, username,password){
-        console.log(">>>>>>>>>",name, email, password, username);
+    async createProject(name, description,userId){
+        console.log(">>>>>>>>>",name,description, userId);
         
-       return  this.customFetch("/register",{
+       return  this.customFetch(`/create-project?userId=${userId}`,{
             method: "POST",
-            body: JSON.stringify({name, email, username, password})
+            body: JSON.stringify({name, description,}),
+            headers:{
+                'Content-Type': 'application/json'
+            }
+            
         })
     }
 
-     async signin(email, password){
-        return this.customFetch("/login",{
-            method: "post",
-            body: JSON.stringify({email, password})
+     async getAllProject(userId){
+        console.log(" >>>>>>", userId)
+        return this.customFetch(`/all-project?userId=${userId}`,{
+            method: "GET",
+            params: userId
+            
         })
     }
-     async getProfile(){
-        return this.customFetch("/users/me")
+     async getProjectById(projectId){
+        console.log(projectId)
+        return this.customFetch(`/project-id?projectId=${projectId}`,{
+            method: "GET"
+        })
     }
 
     async whoAm(){
@@ -52,12 +61,8 @@ class ApiClient{
         })
     }
 
-    async logOut(){
-        return this.customFetch('/logout', {
-            method:'POST'
-        })
-    }
+
 }
 
-const apiClient = new ApiClient();
-export default apiClient
+const apiProject = new ApiProject();
+export default apiProject
