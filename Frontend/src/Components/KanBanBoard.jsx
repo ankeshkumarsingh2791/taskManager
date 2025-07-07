@@ -49,6 +49,10 @@ const completed = [
 
 const KanBanBoard = () => {
   return (
+    <>
+    <div className='w-full flex flex-col justify-between '>
+      <p></p>
+    </div>
     <div className='w-full h-full  grid grid-cols-3 gap-8 px-6  '>
       <div className='bg-white border-gray-500 px-2'>
         <p className='text-center text-2xl font-medium text-gray-400'>To-Do</p>
@@ -111,6 +115,7 @@ const KanBanBoard = () => {
 
       
     </div>
+    </>
   )
 }
 

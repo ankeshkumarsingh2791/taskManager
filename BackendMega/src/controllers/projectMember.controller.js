@@ -86,14 +86,14 @@ const getProjectById = async (req, res) => {
     if(!project){
       throw new ApiError(404, "Project not found")
     }
-     new ApiResponse(200,  {
+     res.status(200).json(new ApiResponse(200,  {
       project: {
         id: project._id,
         name: project.name,
         description: project.description,
         createdBy: project.createdBy
       }
-    },"Project fetched successfully",);
+    },"Project fetched successfully",));
 
   } catch (error) {
     console.log(error);

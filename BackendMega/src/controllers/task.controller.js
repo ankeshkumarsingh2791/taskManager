@@ -57,6 +57,7 @@ const createTask = async (req, res) => {
   // create task
  try {
      const {title, description, status} = req.body;
+     const userId = req.user._id
      if(!title || !description || !status){
        throw new ApiError(401, "title and description required")
      }
@@ -65,8 +66,8 @@ const createTask = async (req, res) => {
        description,
        status,
        project: req.params.projectId,
-       assignedTo: req.User._id,
-       assignedBy: req.User._id,
+       assignedTo: req.user._id,
+       assignedBy: req.user._id,
        attachments: req.files.map(file => ({
          url: file.path,
          mimetype: file.mimetype,
@@ -78,7 +79,7 @@ const createTask = async (req, res) => {
      if(!task){
        throw new ApiError(401, "Something went wrong while creating task")
      }
-     throw new ApiResponse(200, "Task created successfully", {
+      new ApiResponse(200, "Task created successfully", {
        task: {
          id: task._id,
          title: task.title,

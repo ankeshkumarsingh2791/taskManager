@@ -41,7 +41,7 @@ class ApiProject{
     }
 
      async getAllProject(userId){
-        console.log(" >>>>>>", userId)
+       
         return this.customFetch(`/all-project?userId=${userId}`,{
             method: "GET",
             params: userId
