@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { data, Link, Outlet, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import ProjectForm from "../Components/ProjectForm";
 import apiClient from "../../Service/apiClient";
-import { useUserContext } from "../../context/UserContext";
-import apiProject from "../../Service/apiProject";
-import {useProjects, useSingleProject} from "../../context/ProjectContext"
+import { useSingleProject, useProjects } from "../../context/ProjectContext";
 
 const Layout = () => {
   const [showProjects, setShowProjects] = useState(false);
   const [addProject, setAddProject] = useState(false);
-  const [projectId, setProjectId] = useState("");
   const navigate = useNavigate();
-  const handleLogOut = async (e) => {
+
+  const { fetchProjectById } = useSingleProject();
+  const { projects } = useProjects();
+
+  const handleLogOut = async () => {
     try {
       await apiClient.logOut();
       navigate("/login");
@@ -20,52 +21,36 @@ const Layout = () => {
     }
   };
 
-  // const handleProject = async (Id) => {
-  //   try {
-  //     const response = await apiProject.getProjectById(Id);
-
-  //     setProjectId(response?.data);
-  //   } catch (error) {
-  //     console.log(error, "not able to fetch project from frontend");
-  //   }
-  // };
-
-  const {fetchProjectById, projectData} = useSingleProject()
- 
-
-const {projects} = useProjects()
-
-
   return (
-    <div className="w-full h-screen flex flex-col bg-gray-100 font-sans">
-      {/* Header/Nav */}
-      <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center border-b">
-        {/* Left Side - Projects */}
+    <div className="min-h-screen w-full flex flex-col bg-gray-100 font-sans">
+      {/* Header */}
+      <header className="bg-white shadow-md px-4 sm:px-6 py-4 flex flex-wrap justify-between items-center gap-4 border-b">
+        {/* Projects Dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowProjects(!showProjects)}
-            className="text-lg font-semibold text-gray-700 hover:text-blue-600 transition duration-300"
+            className="text-sm sm:text-base font-semibold text-gray-700 hover:text-blue-600 transition duration-300"
           >
             Projects ▾
           </button>
+
           {showProjects && (
-            <div className="absolute mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+            <div className="absolute mt-2 w-52 max-h-64 overflow-y-auto bg-white rounded-lg shadow-lg border z-50">
               {projects.length === 0 ? (
-                <p className="text-gray-600">No projects found.</p>
+                <p className="text-gray-600 p-2">No projects found.</p>
               ) : (
-                <div className="grid grid-cols-1  gap-2 p-2 ">
-                  {projects.map((projects) => (
+                <div className="flex flex-col gap-2 p-2">
+                  {projects.map((project) => (
                     <button
-                      key={projects._id}
+                      key={project._id}
                       onClick={() => {
-                        // handleProject(projects._id);
-                        setShowProjects(false); 
-                        fetchProjectById(projects._id);
+                        setShowProjects(false);
+                        fetchProjectById(project._id);
                       }}
-                      className="bg-white rounded-lg shadow p-2 transition duration-200"
+                      className="bg-white text-left rounded-md hover:bg-gray-100 p-2 transition duration-200"
                     >
-                      <h2 className="text-xl font-semibold text-blue-500">
-                        {projects.name}
+                      <h2 className="text-blue-500 text-sm sm:text-base font-semibold">
+                        {project.name}
                       </h2>
                     </button>
                   ))}
@@ -75,52 +60,40 @@ const {projects} = useProjects()
           )}
         </div>
 
-        <nav>
-          <ul className="flex gap-8 text-md font-medium text-gray-700">
-            <li>
-              <Link
-                to="/dashboard"
-                className="hover:text-blue-600 transition duration-300"
-              >
-                Tasks
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard-1"
-                className="hover:text-blue-600 transition duration-300"
-              >
-                Members
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard-2"
-                className="hover:text-blue-600 transition duration-300"
-              >
-                Notes
-              </Link>
-            </li>
-          </ul>
+        {/* Navigation Links */}
+        <nav className="flex flex-wrap items-center gap-6 text-sm sm:text-base font-medium text-gray-700">
+          <Link to="/dashboard" className="hover:text-blue-600 transition">
+            Tasks
+          </Link>
+          <Link to="/dashboard-1" className="hover:text-blue-600 transition">
+            Members
+          </Link>
+          <Link to="/dashboard-2" className="hover:text-blue-600 transition">
+            Notes
+          </Link>
         </nav>
+
+        {/* Create Project Dropdown */}
         <div className="relative">
           <button
             onClick={() => setAddProject(!addProject)}
-            className="text-lg font-semibold text-white bg-blue-400 p-2 rounded-xl hover:bg-blue-600 transition duration-300"
+            className="text-sm sm:text-base font-semibold text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 transition"
           >
-            Create Projects ▾
+            Create Project ▾
           </button>
+
           {addProject && (
-            <div className="absolute mt-2  bg-white rounded-lg shadow-lg border z-50">
+            <div className="absolute mt-2 w-[300px] sm:w-[400px] bg-white rounded-lg shadow-lg border z-50 p-4">
               <ProjectForm />
             </div>
           )}
         </div>
+
+        {/* Logout Button */}
         <div>
           <button
             onClick={handleLogOut}
-            type="submit"
-            className="bg-blue-400 text-white rounded-lg  font-medium p-2"
+            className="bg-red-500 text-white text-sm sm:text-base rounded-md px-4 py-2 hover:bg-red-600 transition"
           >
             LogOut
           </button>
@@ -128,7 +101,7 @@ const {projects} = useProjects()
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6 bg-gray-50 rounded-t-lg">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 rounded-t-lg">
         <Outlet />
       </main>
     </div>

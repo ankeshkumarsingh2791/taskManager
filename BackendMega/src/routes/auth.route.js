@@ -7,7 +7,7 @@ import { isLoggedIn, whoAmI } from "../middleware/auth.middleware.js"
 
 const router = express.Router()
 
-router.get("/who-am-i",whoAmI);
+router.get("/who-am-i",  whoAmI);
 router.post("/register", registerUser)
 router.post("/login",  loginUser)
 router.get("/verify/:token", verifyingUser)

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import apiClient from '../../Service/apiClient';
+import { useNavigate } from 'react-router';
 
 
 const SignUp = () => {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -26,6 +28,7 @@ const SignUp = () => {
       const {name,email,username,password} = form
      
       apiClient.signup(name,email,username,password)
+      navigate('/login')
     } catch (error) {
       console.log(error, "error in sing up")
     }
@@ -35,7 +38,7 @@ const SignUp = () => {
   return (
     <div
      
-      className="max-w-md flex justify-center items-center flex-col  mx-auto bg-white shadow-2xl rounded-2xl p-8 mt-10 border border-gray-200"
+      className="flex px-6 mx-10 max-w-md flex-col mt-20 md:ml-96 py-8 shadow-2xl rounded-2xl  border border-gray-200"
     >
       <h2 className="text-2xl  font-semibold text-center mb-6 text-gray-800">Register</h2>
       <form onSubmit={handleSubmit} className="space-y-4">

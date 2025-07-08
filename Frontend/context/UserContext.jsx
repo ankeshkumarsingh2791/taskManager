@@ -1,29 +1,39 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import apiClient from "../Service/apiClient";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
-const userContext = createContext()
+const userContext = createContext();
 
-export function UserContextProvider({children}){
+export function UserContextProvider({ children }) {
+  const [fetchedData, setFetchedData] = useState({ data: {}, statusCode: 400 });
+  const navigate = useNavigate();
+  const location = useLocation(); // ⬅️ get current route
 
-    const [fetchedData, setFetchedData] = useState({data:{},statusCode:400})
-    const navigate = useNavigate()
-       useEffect(() => {
-        const data = async () => {
-        try{
-          const response = await apiClient.whoAm()
-         setFetchedData(response)
-        } catch(error){
-          console.error(error);
-          navigate('/login')
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await apiClient.whoAm();
+        setFetchedData(response);
+      } catch (error) {
+        console.error(error);
+
+        // ✅ Only redirect to login if not already on a public route
+        const publicRoutes = ["/login", "/register"];
+        if (!publicRoutes.includes(location.pathname)) {
+          navigate("/login");
         }
       }
-      data()
-        
-     }, [navigate])
+    };
 
-     return<userContext.Provider value={{fetchedData,setFetchedData}}>{children}</userContext.Provider>
+    fetchUser();
+  }, [location.pathname, navigate]);
+
+  return (
+    <userContext.Provider value={{ fetchedData, setFetchedData }}>
+      {children}
+    </userContext.Provider>
+  );
 }
 
 // custom hook
-export const useUserContext = ()=> useContext(userContext)
+export const useUserContext = () => useContext(userContext);

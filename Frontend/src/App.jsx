@@ -11,10 +11,7 @@ function App() {
   const {fetchedData} =  useUserContext()
  const statusCode = fetchedData?.statusCode || 401
   
-//  useEffect(()=>{
-//   console.log(fetchedData,"?????????????????");
-  
-//  },[fetchedData])
+
   return (
     <>  
     
