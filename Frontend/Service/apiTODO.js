@@ -35,6 +35,14 @@ class ApiTODO{
         }
        })
     }
+
+    async getProjectById(projectId){
+        console.log(projectId, ">>>>>>>>><<<<<<<<>>>>>>>>.......")
+        return this.customFetch(`/get-task-ById?projectId=${projectId}`, {
+            method: "GET",
+            
+        })
+    }
 }
 
 

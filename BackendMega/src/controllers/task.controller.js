@@ -28,31 +28,40 @@ const getTasks = async (req, res) => {
 };
 
 
-const getTaskByProject = async (req, res) => {
-  // get task by project id
-  if(!req.params.projectId){
-    throw new ApiError(401, "Project ID is required");
-  }
-  const tasks = await Task.find({ project: req.params.projectId })
-    .populate("assignedTo", "name email")
-    .populate("assignedBy", "name email");
-  if (!tasks || tasks.length === 0) {
-    throw new ApiError(404, "No tasks found for this project");
-  }
-  throw new ApiResponse(200, "Tasks retrieved successfully", {
-    tasks: tasks.map(task => ({
-      id: task._id,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      project: task.project,
-      assignedTo: task.assignedTo,
-      assignedBy: task.assignedBy,
-      attachments: task.attachments
-    }))
-  });
+const getTaskByProject = async (req, res, next) => {
+  try {
+    const projectId = req.query.projectId || req.params.projectId;
+    if (!projectId) {
+      throw new ApiError(400, "Project ID is required");
+    }
 
+    const tasks = await Task.find({ project: projectId })
+      .populate("assignedTo", "name email")
+      .populate("assignedBy", "name email");
+
+    if (!tasks || tasks.length === 0) {
+      throw new ApiError(404, "No tasks found for this project");
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200, "Tasks retrieved successfully", {
+        tasks: tasks.map(task => ({
+          id: task._id,
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          project: task.project,
+          assignedTo: task.assignedTo,
+          assignedBy: task.assignedBy,
+          attachments: task.attachments
+        }))
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 const createTask = async (req, res) => {
   // create task
@@ -60,10 +69,10 @@ const createTask = async (req, res) => {
      const {title, description} = req.body;
      const projectId = req.query.projectId || req.params.projectId
      const userId = req.user._id
-     console.log(userId, ">>>>>>>>>>>")
-     if( !userId || !projectId || title || description ){
-       throw new ApiError(401, "title and description url required")
-     }
+     console.log(userId, projectId, title, description)
+    //  if( !userId || !projectId || title || description ){
+    //    throw new ApiError(401, "title and description url required")
+    //  }
      const task = await Task.create({
        title,
        description,

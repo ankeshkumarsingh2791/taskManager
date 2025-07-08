@@ -4,7 +4,7 @@ import ProjectForm from "../Components/ProjectForm";
 import apiClient from "../../Service/apiClient";
 import { useUserContext } from "../../context/UserContext";
 import apiProject from "../../Service/apiProject";
-import {useProjects} from "../../context/ProjectContext"
+import {useProjects, useSingleProject} from "../../context/ProjectContext"
 
 const Layout = () => {
   const [showProjects, setShowProjects] = useState(false);
@@ -20,15 +20,18 @@ const Layout = () => {
     }
   };
 
-  const handleProject = async (Id) => {
-    try {
-      const response = await apiProject.getProjectById(Id);
+  // const handleProject = async (Id) => {
+  //   try {
+  //     const response = await apiProject.getProjectById(Id);
 
-      setProjectId(response?.data);
-    } catch (error) {
-      console.log(error, "not able to fetch project from frontend");
-    }
-  };
+  //     setProjectId(response?.data);
+  //   } catch (error) {
+  //     console.log(error, "not able to fetch project from frontend");
+  //   }
+  // };
+
+  const {fetchProjectById, projectData} = useSingleProject()
+ 
 
 const {projects} = useProjects()
 
@@ -55,8 +58,9 @@ const {projects} = useProjects()
                     <button
                       key={projects._id}
                       onClick={() => {
-                        handleProject(projects._id);
-                        setShowProjects(false); // optional to close the dropdown
+                        // handleProject(projects._id);
+                        setShowProjects(false); 
+                        fetchProjectById(projects._id);
                       }}
                       className="bg-white rounded-lg shadow p-2 transition duration-200"
                     >
