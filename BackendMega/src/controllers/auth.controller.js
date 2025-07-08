@@ -91,7 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   };
 
-  res.cookie("token", jwtToken, cookieOptions);
+  // res.cookie("token", jwtToken, cookieOptions);
 
   res.status(200).json(
     new ApiResponse(200, "User logged in successfully", {

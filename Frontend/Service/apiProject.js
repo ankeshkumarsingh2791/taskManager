@@ -3,7 +3,8 @@ class ApiProject{
         this.baseURL = "http://localhost:8080/api/v1/project";
         this.defaultHeaders = {
             'Content-Type': "application/json",
-            "Accept": "application/json"
+            "Accept": "application/json",
+             "token":localStorage.getItem("token") ?? ""
         }
     }
 

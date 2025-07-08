@@ -13,6 +13,7 @@ export function UserContextProvider({ children }) {
     const fetchUser = async () => {
       try {
         const response = await apiClient.whoAm();
+        // const response = localStorage.getItem("token")
         setFetchedData(response);
       } catch (error) {
         console.error(error);

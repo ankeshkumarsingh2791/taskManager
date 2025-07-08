@@ -15,10 +15,13 @@ const Layout = () => {
   const handleLogOut = async () => {
     try {
       await apiClient.logOut();
+      localStorage.removeItem("token")
       navigate("/login");
     } catch (error) {
       console.log(error);
     }
+      // navigate("/login");
+
   };
 
   return (

@@ -14,12 +14,14 @@ const Sigin = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     try {
       e.preventDefault();
       console.log('Signing in with:', form);
       const {email, password} = form
-      apiClient.signin(email,password)
+      const data = await apiClient.signin(email,password)
+      
+    localStorage.setItem("token",data.message.token);
       navigate('/dashboard')
     } catch (error) {
       console.log(error)
