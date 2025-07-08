@@ -1,6 +1,6 @@
 class ApiClient{
     constructor(){
-        this.baseURL = "https://taskmanager-3-87gw.onrender.com";
+        this.baseURL = "http://localhost:8080/api/v1/user";
         this.defaultHeaders = {
             'Content-Type': "application/json",
             "Accept": "application/json"
@@ -28,7 +28,6 @@ class ApiClient{
     }
 
     async signup(name, email, username,password){
-        console.log(">>>>>>>>>",name, email, password, username);
         
        return  this.customFetch("/register",{
             method: "POST",
@@ -44,6 +43,10 @@ class ApiClient{
     }
      async getProfile(){
         return this.customFetch("/users/me")
+    }
+
+     async verifyMail(token){
+        return this.customFetch(`/verify/${token}`)
     }
 
     async whoAm(){

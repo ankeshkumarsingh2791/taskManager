@@ -6,6 +6,7 @@ import KanBanBoard from './Components/KanBanBoard';
 import CreateTaskForm from './Components/CreateTaskForm'
 import { useUserContext } from '../context/UserContext';
 import { useEffect } from 'react';
+import Verify from './Components/Verify';
 
 function App() {
   const {fetchedData} =  useUserContext()
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path='/login' element={<Sigin />} />
         <Route path='/register' element={<SignUp />} />
+        <Route path='/verify' element={<Verify/>} />
 
         {statusCode === 200 && <Route path='/' element={<Layout />}>
 

@@ -28,7 +28,7 @@ class ApiProject{
     }
 
     async createProject(name, description,userId){
-        console.log(">>>>>>>>>",name,description, userId);
+        
         
        return  this.customFetch(`/create-project?userId=${userId}`,{
             method: "POST",
@@ -49,7 +49,7 @@ class ApiProject{
         })
     }
      async getProjectById(projectId){
-        console.log(projectId)
+       
         return this.customFetch(`/project-id?projectId=${projectId}`,{
             method: "GET"
         })

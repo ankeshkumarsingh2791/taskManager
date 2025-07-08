@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
 console.log(verificationUrl);
 
   // emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
-  await sendMail({body:verificationUrl.hashedToken,subject:"Registration",email,})
+  await sendMail({body:`To verify your email click on this link: http://localhost:5173/verify?type=email&token=${verificationUrl.hashedToken}`,subject:"Registration",email,})
 
   res.status(201).json(
     new ApiResponse(201, "User registered successfully", {

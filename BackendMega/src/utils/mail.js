@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 
  export const sendMail = async (options) => {
 
+console.log(options.body,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
   const transporter = nodemailer.createTransport({
     service: "Gmail",
