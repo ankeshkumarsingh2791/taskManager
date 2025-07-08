@@ -1,6 +1,6 @@
 class ApiProject{
     constructor(){
-        this.baseURL = "http://localhost:8080/api/v1/project";
+        this.baseURL = "https://taskmanager-3-87gw.onrender.com/api/v1/project";
         this.defaultHeaders = {
             'Content-Type': "application/json",
             "Accept": "application/json",
