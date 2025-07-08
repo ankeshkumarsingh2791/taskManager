@@ -29,7 +29,7 @@ connectDB()
 
 
 const app = express()
-app.use(cors({origin:"https://task-manager-tau-lake.vercel.app",credentials:true}))
+app.use(cors({origin:`${"https://task-manager-tau-lake.vercel.app"}`,credentials:true}))
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
