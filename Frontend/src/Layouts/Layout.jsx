@@ -9,11 +9,8 @@ import {useProjects} from "../../context/ProjectContext"
 const Layout = () => {
   const [showProjects, setShowProjects] = useState(false);
   const [addProject, setAddProject] = useState(false);
-  const [project, setProject] = useState([]);
   const [projectId, setProjectId] = useState("");
-  const { fetchedData } = useUserContext();
   const navigate = useNavigate();
-  const userId = fetchedData?.data?._id || null;
   const handleLogOut = async (e) => {
     try {
       await apiClient.logOut();
@@ -22,20 +19,6 @@ const Layout = () => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     try {
-  //       if (userId) {
-  //         const response = await apiProject.getAllProject(userId);
-  //         console.log(response, "Fetched Projects");
-  //         setProjects(response?.data);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching projects:", error);
-  //     }
-  //   };
-  //   fetchProjects();
-  // }, [userId]);
 
   const handleProject = async (Id) => {
     try {
@@ -47,11 +30,9 @@ const Layout = () => {
     }
   };
 
-  const {projects} = useProjects();
-  setProject(projects?.data)
+const {projects} = useProjects()
 
-  // console.log(JSON.stringify(projects), "Projects in Layout");
-  console.log(JSON.stringify(projectId), ">>>>>>>>>>>>...");
+
   return (
     <div className="w-full h-screen flex flex-col bg-gray-100 font-sans">
       {/* Header/Nav */}
@@ -66,21 +47,21 @@ const Layout = () => {
           </button>
           {showProjects && (
             <div className="absolute mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
-              {project.length === 0 ? (
+              {projects.length === 0 ? (
                 <p className="text-gray-600">No projects found.</p>
               ) : (
                 <div className="grid grid-cols-1  gap-2 p-2 ">
-                  {project.map((project) => (
+                  {projects.map((projects) => (
                     <button
-                      key={project._id}
+                      key={projects._id}
                       onClick={() => {
-                        handleProject(project._id);
+                        handleProject(projects._id);
                         setShowProjects(false); // optional to close the dropdown
                       }}
                       className="bg-white rounded-lg shadow p-2 transition duration-200"
                     >
                       <h2 className="text-xl font-semibold text-blue-500">
-                        {project.name}
+                        {projects.name}
                       </h2>
                     </button>
                   ))}

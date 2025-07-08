@@ -1,22 +1,38 @@
-import react, { useState } from "react";
+import React, { useState } from "react";
 
-const option = ["Ankesh", "Prafull", "Anuj"];
-const DropDown = ({ title = "Click" }) => {
+const DropDown = ({ option = [], onClick }) => {
   const [show, setShow] = useState(false);
+
+  const handleSelect = (item) => {
+    onClick?.(item); // pass the selected item back
+    setShow(false);  // close dropdown
+  };
+
   return (
-    <div onClick={() => setShow(!show)} className="w-full px-4 py-2   ">
-      <h2>{title}</h2>
+    <div className="relative w-full max-w-sm">
+      <button
+        onClick={() => setShow(!show)}
+        className="w-full px-4 py-2 border flex  border-gray-300 rounded-md bg-white shadow-sm text-left"
+      >
+        <h2 className="text-gray-700">Select Project</h2>
+        <span className="float-right">{show ? "▲" : "▼"}</span>
+      </button>
+
       {show && (
-        <div className="w-full z-10   bg-white">
-          {option.map((option, index) => (
-            <div
-              key={index}
-              onClick={() => setShow(false)}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-50 text-sm"
-            >
-              {option}
-            </div>
-          ))}
+        <div className="absolute mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md z-10">
+          {option.length === 0 ? (
+            <div className="px-4 py-2 text-gray-500 text-sm">No projects found</div>
+          ) : (
+            option.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => handleSelect(item)}
+                className="cursor-pointer px-4 py-2 hover:bg-gray-100 text-sm text-gray-800"
+              >
+                {item.name}
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>

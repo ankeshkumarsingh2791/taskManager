@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import apiProject from "../Service/apiProject";
 import { useUserContext } from "./UserContext"; // assuming you already have this
+import { data } from "react-router";
 
 const ProjectContext = createContext();
 const SingleProjectContext = createContext();
@@ -15,9 +16,11 @@ export function ProjectContextProvider({ children }) {
     const fetchProjects = async () => {
       try {
         if (userId) {
+          
           const response = await apiProject.getAllProject(userId);
-          console.log(response, "Fetched Projects");
-          setProjects(response?.data?.projects || []);
+ 
+          setProjects(response?.data || []);
+  
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -25,7 +28,7 @@ export function ProjectContextProvider({ children }) {
     };
     fetchProjects();
   }, [userId]);
-
+ 
   return (
     <ProjectContext.Provider value={{ projects, setProjects }}>
       {children}

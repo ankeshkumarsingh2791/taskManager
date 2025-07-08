@@ -1,8 +1,9 @@
 // get all tasks
-import { Task } from "../models/task.model.js";
+import { Task } from "../models/task.modle.js";
 import { subTask } from "../models/subTask.modle.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
+import {User} from '../models/user.modles.js'
 const getTasks = async (req, res) => {
   // get all tasks
   if(!req.Task._id){
@@ -56,23 +57,25 @@ const getTaskByProject = async (req, res) => {
 const createTask = async (req, res) => {
   // create task
  try {
-     const {title, description, status} = req.body;
+     const {title, description} = req.body;
+     const projectId = req.query.projectId || req.params.projectId
      const userId = req.user._id
-     if(!title || !description || !status){
-       throw new ApiError(401, "title and description required")
+     console.log(userId, ">>>>>>>>>>>")
+     if( !userId || !projectId || title || description ){
+       throw new ApiError(401, "title and description url required")
      }
      const task = await Task.create({
        title,
        description,
-       status,
-       project: req.params.projectId,
-       assignedTo: req.user._id,
-       assignedBy: req.user._id,
-       attachments: req.files.map(file => ({
-         url: file.path,
-         mimetype: file.mimetype,
-         size: file.size
-       }))
+      //  status: "Todo",
+       project: projectId,
+       assignedTo: userId,
+       assignedBy: userId,
+      //  attachments: req.files.map(file => ({
+      //    url: file.path,
+      //    mimetype: file.mimetype,
+      //    size: file.size
+      //  }))
    
    
      })

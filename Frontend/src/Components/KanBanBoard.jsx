@@ -1,5 +1,7 @@
 import React from 'react'
 import Button from '../ui/Button'
+import { Link } from 'react-router'
+import { useSingleProject } from '../../context/ProjectContext'
 
 const todo = [
   {
@@ -48,10 +50,25 @@ const completed = [
 
 
 const KanBanBoard = () => {
+
+  const handleClick =() =>{
+    const {projectData} = useSingleProject()
+    setShow(false)
+    console.log(projectData, "..........")
+    }
   return (
     <>
-    <div className='w-full flex flex-col justify-between '>
-      <p></p>
+    <div className='w-full flex px-12 py-4 justify-between '>
+      <p>Project Name</p>
+      <Link to={'/add-task'}>
+      <button
+           
+            type="submit"
+            className="bg-blue-400 w-40 text-white rounded-lg  font-medium p-2"
+          >
+            Add Task
+          </button>
+      </Link>
     </div>
     <div className='w-full h-full  grid grid-cols-3 gap-8 px-6  '>
       <div className='bg-white border-gray-500 px-2'>

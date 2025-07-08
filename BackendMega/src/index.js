@@ -4,6 +4,7 @@ import connectDB from "../src/db/dbConnect.js"
 import healthCheckerRouter from "../src/routes/healthcheck.route.js"
 import userRoutes from "../src/routes/auth.route.js"
 import projectRoutes from "../src/routes/project.route.js"
+import taskRoutes from "../src/routes/task.route.js"
 import cookieParser from "cookie-parser";
 import cors from 'cors'
 
@@ -41,3 +42,4 @@ app.get("/", ()=> {
 app.use("/api/v1/healthCheck", healthCheckerRouter)
 app.use("/api/v1/user",userRoutes)
 app.use("/api/v1/project",projectRoutes )
+app.use("/api/v1/todo", taskRoutes)
