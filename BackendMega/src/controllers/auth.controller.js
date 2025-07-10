@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
 console.log(verificationUrl);
 
   // emailVerificationMailGenContent(newUser.username, verificationUrl.hashedToken);
-  await sendMail({body:`To verify your email click on this link: https://task-manager-tau-lake.vercel.app/verify?type=email&token=${verificationUrl.hashedToken}`,subject:"Registration",email,})
+  await sendMail({body:`To verify your email click on this link: http://localhost:5173/verify?type=email&token=${verificationUrl.hashedToken}`,subject:"Registration",email,})
 
   res.status(201).json(
     new ApiResponse(201, "User registered successfully", {
@@ -91,7 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   };
 
-  // res.cookie("token", jwtToken, cookieOptions);
+  res.cookie("token", jwtToken, cookieOptions);
 
   res.status(200).json(
     new ApiResponse(200, "User logged in successfully", {

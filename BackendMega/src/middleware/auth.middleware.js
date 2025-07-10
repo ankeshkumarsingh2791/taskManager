@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 
 export const isLoggedIn = async (req, res, next) => {
   try {
-    const token = req.cookies?.token || req.headers?.token;
+    const token = req.cookies?.token;
 
     console.log("checking cookies", req.cookies);
     console.log("token found", token ? "yes" : "no");
@@ -34,9 +34,7 @@ export const isLoggedIn = async (req, res, next) => {
 
 export const whoAmI = async (req, res) => {
   try {
-    console.log(req.headers?.token,">>>>>>>>>>>>>");
-    
-    const token = req.cookies?.token || req.headers?.token;
+    const token = req.cookies?.token;
 
 
     if (!token) {
