@@ -1,10 +1,9 @@
 class ApiClient{
     constructor(){
-        this.baseURL = "https://taskmanager-3-87gw.onrender.com/api/v1/user";
+        this.baseURL = "http://localhost:8080/api/v1/user";
         this.defaultHeaders = {
             'Content-Type': "application/json",
-            "Accept": "application/json",
-            "token":localStorage.getItem("token") ?? ""
+            "Accept": "application/json"
         }
     }
 
@@ -47,7 +46,7 @@ class ApiClient{
     }
 
      async verifyMail(token){
-        return this.customFetch(`/verify/${token}`)
+        return this.customFetch(`/verify/`)
     }
 
     async whoAm(){

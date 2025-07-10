@@ -1,10 +1,9 @@
 class ApiTODO{
     constructor(){
-        this.baseURL="https://taskmanager-3-87gw.onrender.com/api/v1/todo";
+        this.baseURL="http://localhost:8080/api/v1/todo";
         this.defaultHeaders = {
             'Content-Type': "application/json",
-            "Accept":"application/json",
-             "token":localStorage.getItem("token") ?? ""
+            "Accept":"application/json"
         }
     }
     async customFetch(endPoint, options = {}){
@@ -38,7 +37,6 @@ class ApiTODO{
     }
 
     async getProjectById(projectId){
-        
         return this.customFetch(`/get-task-ById?projectId=${projectId}`, {
             method: "GET",
             
