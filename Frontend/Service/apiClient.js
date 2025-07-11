@@ -17,7 +17,7 @@ class ApiClient{
             credentials: 'include'
 
            }
-           console.log('fetch url')
+      
           const response =  await fetch(url, config)
           const data = await response.json()
           return data

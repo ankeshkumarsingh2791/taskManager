@@ -189,58 +189,126 @@ const getProjectMembers = async (req, res) => {
   }
 };
 
-const addMemberToProject = async (req, res) => {
-  // add member to project
-try {
-    const {email, name} = req.body;
-    if(!email || !name){
-      throw new ApiError(400, "Email and name is required");
-    }
-    const user = await User.findOne({email});
-    if(!user){
-      throw new ApiError(404, "User not found with this email");
+// const addMemberToProject = async (req, res) => {
+//   // add member to project
+// try {
+//     const {email, name} = req.body;
+//     if(!email || !name){
+//       throw new ApiError(400, "Email and name is required");
+//     }
+//     const user = await User.findOne({email});
+//     if(!user){
+//       throw new ApiError(404, "User not found with this email");
   
+//     }
+//     const project = await Project.findById(req.params.projectId);
+//     if(!project){
+//       throw new ApiError(401, "Project not found");
+//     }
+//     if(project.createdBy.toString() !== req.params.User._id.toString()){
+//       throw new ApiError(401, "You are not allowed")
+//     }
+//     const existingMember = await ProjectMember.findOne({
+//       user: user._id,
+//       project: project._id
+//     })
+//     if(existingMember){
+//       throw new ApiError(400, "User is already a member of this project");
+//     }
+//     const newMember = await ProjectMember.create({
+//       user: user._id,
+//       project: project._id,
+//       role: AvailableUserRoles.MEMBER // default role
+//     });
+//     if(!newMember){
+//       throw new ApiError(500, "Something went wrong while adding member to project");
+//     }
+//     throw new ApiResponse(201, "Member added to project successfully", {
+//       member: {
+//         id: newMember._id,
+//         user: {
+//           id: user._id,
+//           name: user.name,
+//           email: user.email
+//         },
+//         project: project._id,
+//         role: newMember.role
+//       }
+//     });
+// } catch (error) {
+//     console.log(error);
+//     throw new ApiError(500, "Something went wrong while adding member to project");
+//   }
+  
+// }
+
+const addMemberToProject = async (req, res) => {
+  try {
+    const { email, name } = req.body;
+
+    if (!email || !name) {
+      throw new ApiError(400, "Email and name are required");
     }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new ApiError(404, "User not found with this email");
+    }
+
     const project = await Project.findById(req.params.projectId);
-    if(!project){
-      throw new ApiError(401, "Project not found");
+    if (!project) {
+      throw new ApiError(404, "Project not found");
     }
-    if(project.createdBy.toString() !== req.params.User._id.toString()){
-      throw new ApiError(401, "You are not allowed")
+
+    // 🛡️ Check if current user is the project owner
+    if (project.createdBy.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "You are not authorized to add members");
     }
+
+    // Check if user is already a member
     const existingMember = await ProjectMember.findOne({
       user: user._id,
       project: project._id
-    })
-    if(existingMember){
+    });
+
+    if (existingMember) {
       throw new ApiError(400, "User is already a member of this project");
     }
+
     const newMember = await ProjectMember.create({
       user: user._id,
       project: project._id,
-      role: AvailableUserRoles.MEMBER // default role
+      role: AvailableUserRoles.MEMBER
     });
-    if(!newMember){
-      throw new ApiError(500, "Something went wrong while adding member to project");
+
+    if (!newMember) {
+      throw new ApiError(500, "Failed to add member to project");
     }
-    throw new ApiResponse(201, "Member added to project successfully", {
-      member: {
-        id: newMember._id,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email
-        },
-        project: project._id,
-        role: newMember.role
-      }
-    });
-} catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Something went wrong while adding member to project");
+
+    // ✅ Send response properly
+    return res.status(201).json(
+      new ApiResponse(201, "Member added to project successfully", {
+        member: {
+          id: newMember._id,
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email
+          },
+          project: project._id,
+          role: newMember.role
+        }
+      })
+    );
+
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(error.statusCode || 500)
+      .json(new ApiError(error.statusCode || 500, error.message || "Internal Server Error"));
   }
-  
-}
+};
+
 
 
 

@@ -17,7 +17,7 @@ const Sigin = () => {
   const handleSubmit = async(e) => {
     try {
       e.preventDefault();
-      console.log('Signing in with:', form);
+    
       const {email, password} = form
       const data = await apiClient.signin(email,password)
       
@@ -25,6 +25,7 @@ const Sigin = () => {
       navigate('/dashboard')
     } catch (error) {
       console.log(error)
+      alert("Invalid credentials")
     }
   };
 
